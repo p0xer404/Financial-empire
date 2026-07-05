@@ -1,0 +1,31 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Financial Empire emblem">
+  <defs>
+    <linearGradient id="feGold" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fbe7ad"/>
+      <stop offset="0.42" stop-color="#e7c873"/>
+      <stop offset="0.72" stop-color="#cda84e"/>
+      <stop offset="1" stop-color="#8a6a18"/>
+    </linearGradient>
+    <linearGradient id="feInk" x1="14" y1="18" x2="50" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3a2c07"/>
+      <stop offset="1" stop-color="#1c1502"/>
+    </linearGradient>
+  </defs>
+  <!-- badge -->
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="url(#feGold)"/>
+  <rect x="3.75" y="3.75" width="56.5" height="56.5" rx="15.25" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1.5"/>
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="none" stroke="#6e520f" stroke-opacity="0.35" stroke-width="1"/>
+  <!-- ascending columns (chart base) -->
+  <g fill="url(#feInk)" opacity="0.16">
+    <rect x="14" y="40" width="6" height="11" rx="2"/>
+    <rect x="23.5" y="34" width="6" height="17" rx="2"/>
+    <rect x="33" y="28" width="6" height="23" rx="2"/>
+    <rect x="42.5" y="21" width="6" height="30" rx="2"/>
+  </g>
+  <!-- growth line -->
+  <path d="M14 43 L25.5 33 L33.5 38.5 L49 21.5" fill="none" stroke="url(#feInk)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- arrow head pointing up-right -->
+  <path d="M49 21.5 L40.6 22.4 M49 21.5 L48.1 29.9" fill="none" stroke="url(#feInk)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- vertex node -->
+  <circle cx="25.5" cy="33" r="2.5" fill="#fff" fill-opacity="0.92"/>
+</svg>

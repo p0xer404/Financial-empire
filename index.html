@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Empire — Idle Stock Market Tycoon</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<meta name="theme-color" content="#06070a">
+<meta name="description" content="Financial Empire — a premium idle stock-market tycoon. Trade live markets, fund startups, run a hedge fund and reincorporate your way to a trillion-dollar empire.">
+<meta property="og:title" content="Financial Empire">
+<meta property="og:description" content="From $10,000 to a global financial empire.">
+<meta property="og:image" content="assets/cover.svg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<!-- CrazyGames SDK (loads ads, data module, lifecycle). Safe to fail: the game falls back to localStorage. -->
+<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+</head>
+<body>
+
+<!-- Branded loading splash (fades out once the game has booted) -->
+<div id="splash">
+  <div class="splash-inner">
+    <img class="splash-logo" src="assets/logo.svg" width="104" height="104" alt="Financial Empire">
+    <div class="splash-word">FINANCIAL EMPIRE</div>
+    <div class="splash-tag">From $10,000 to a global empire</div>
+    <div class="splash-bar"><div class="splash-fill"></div></div>
+    <div class="splash-loading mono">Loading markets…</div>
+  </div>
+</div>
+
+<div id="app">
+
+  <header id="topbar">
+    <div class="brand">
+      <img class="logo-img" src="assets/logo.svg" width="36" height="36" alt="Financial Empire logo">
+      <div class="name">FINANCIAL EMPIRE<small>TERMINAL · MMXXVI</small></div>
+    </div>
+
+    <div class="stat-cluster">
+      <div class="stat">
+        <span class="label">Net Worth</span>
+        <span class="value big mono" id="t-networth">$10,000</span>
+      </div>
+      <div class="stat">
+        <span class="label">Cash</span>
+        <span class="value mono" id="t-cash">$10,000</span>
+      </div>
+      <div class="stat">
+        <span class="label">Passive</span>
+        <span class="value mono pos" id="t-passive">+$0/s</span>
+      </div>
+      <div class="stat">
+        <span class="label">Rank</span>
+        <span class="value gold" id="t-rank">Bedroom Investor</span>
+      </div>
+      <div class="xpwrap">
+        <span class="label">Level <b id="t-level">1</b> <span class="xp-mini" id="t-xp-label">0 / 100 XP</span></span>
+        <div class="xpbar"><div class="xpfill" id="t-xp" style="width:0%"></div></div>
+      </div>
+      <div class="streak-chip" id="streak-chip" style="display:none"><span class="flame">🔥</span><span class="sval mono">2×</span></div>
+    </div>
+
+    <div class="regime-badge" id="t-regime" data-dir="flat"><span class="regime-dot"></span><span class="reg-label">Stable Market</span></div>
+
+    <div class="topbtns">
+      <button class="icon-btn" id="btn-sound" title="Sound">🔊</button>
+      <button class="icon-btn" id="btn-theme" title="Toggle theme">☀</button>
+      <button class="icon-btn" id="btn-save" title="Save">💾</button>
+      <button class="icon-btn" id="btn-data" title="Import / Export">⇅</button>
+      <button class="icon-btn" id="btn-reset" title="Reset">⟳</button>
+    </div>
+  </header>
+
+  <!-- Persistent next-reward tracker -->
+  <div id="goal-tracker">
+    <span class="goal-ic">🎯</span>
+    <span class="goal-text">Next: <b id="goal-reward">—</b></span>
+    <div class="goal-bar"><div id="goal-fill"></div></div>
+    <span class="goal-pct mono" id="goal-pct">0%</span>
+    <span class="goal-remain mono" id="goal-remain"></span>
+  </div>
+
+  <!-- Always-visible power-up bar (the addictive hook, 1 click to open) -->
+  <div id="boost-bar">
+    <button class="boost-open" id="boost-open">⚡ Power-Ups</button>
+    <div class="boost-actives" id="boost-actives"></div>
+    <div class="boost-quick" id="boost-quick"></div>
+  </div>
+
+  <div id="body">
+    <nav id="nav"></nav>
+
+    <main id="main">
+
+      <section class="view active" data-view="dashboard">
+        <div class="grid g-2">
+          <div class="panel accent-blue">
+            <div class="panel-head"><h3>Market Index</h3><span class="sub mono" id="dash-index">1000.00</span></div>
+            <div class="panel-body"><div class="chartbox"><canvas id="indexChart" height="220"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Portfolio</h3><span class="sub" id="dash-holdcount">0 positions</span></div>
+            <div class="panel-body" id="dash-portfolio"></div>
+          </div>
+        </div>
+        <div class="grid g-3" style="margin-top:16px;">
+          <div class="panel" style="grid-column:span 2;">
+            <div class="panel-head"><h3>Sector Heatmap</h3><span class="sub">Live performance</span></div>
+            <div class="panel-body"><div class="heatmap" id="dash-heatmap"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Breaking News</h3><span class="regime-dot live" style="background:var(--red)"></span></div>
+            <div class="panel-body" style="padding:0; max-height:340px; overflow-y:auto;" id="dash-news"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="market">
+        <div id="market-scanner"></div>
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="panel-head"><h3>Markets</h3><span class="sub" id="market-count"></span></div>
+            <div class="panel-body" style="padding:0; max-height:64vh; overflow-y:auto;">
+              <table id="market-table"><thead><tr>
+                <th>Symbol</th><th>Sector</th><th>Trend</th><th>Price</th><th>Change</th><th>Risk</th><th>Yield</th>
+              </tr></thead><tbody id="market-body"></tbody></table>
+            </div>
+          </div>
+          <div class="panel" id="trade-panel">
+            <div class="panel-head"><h3 id="trade-title">Select a Company</h3><span class="sub" id="trade-sub"></span></div>
+            <div class="panel-body" id="trade-body">
+              <div class="empty">Select a company from the market to trade.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="portfolio">
+        <div class="panel">
+          <div class="panel-head"><h3>Holdings</h3><span class="sub" id="port-total"></span></div>
+          <div class="panel-body" style="padding:0;">
+            <table><thead><tr><th>Symbol</th><th>Qty</th><th>Avg Cost</th><th>Price</th><th>Value</th><th>P/L</th><th></th></tr></thead>
+            <tbody id="port-body"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="boosts"><h2 class="section-title">Power-Ups · Boosts</h2><div id="boosts-wrap"></div></section>
+      <section class="view" data-view="startups"><h2 class="section-title">Venture Capital · Startup Center</h2><div id="startups-wrap"></div></section>
+      <section class="view" data-view="ipos"><h2 class="section-title">IPO Center</h2><div id="ipos-wrap"></div></section>
+      <section class="view" data-view="deals"><h2 class="section-title">Exclusive Investor Network</h2><div id="deals-wrap"></div></section>
+      <section class="view" data-view="acquisitions"><h2 class="section-title">Acquisitions Dashboard</h2><div id="acq-wrap"></div></section>
+      <section class="view" data-view="hedgefund"><h2 class="section-title">Hedge Fund Dashboard</h2><div id="hf-wrap"></div></section>
+      <section class="view" data-view="empire"><h2 class="section-title">Global Finance · Empire</h2><div id="empire-wrap"></div></section>
+      <section class="view" data-view="legacy"><h2 class="section-title">Legacy · Reincorporation</h2><div id="legacy-wrap"></div></section>
+
+      <section class="view" data-view="rankings">
+        <div class="grid g-2">
+          <div class="panel"><div class="panel-head"><h3>Global Wealth Ranking</h3></div><div class="panel-body" id="rank-list"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Progression</h3></div><div class="panel-body" id="rank-progress"></div></div>
+        </div>
+      </section>
+
+      <section class="view" data-view="achievements">
+        <div class="panel">
+          <div class="panel-head"><h3>Achievement Center</h3><span class="sub" id="ach-count"></span></div>
+          <div class="panel-body"><div class="grid g-auto" id="ach-grid"></div></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- scrolling news ticker -->
+  <div id="ticker-bar"><span class="ticker-tag">LIVE</span><div id="ticker-strip"></div></div>
+</div>
+
+<div id="floaters"></div>
+<div id="toasts"></div>
+<div id="streak-pop"></div>
+<div id="achpop"><div class="medal">★</div><div><div class="at">Achievement Unlocked</div><div class="an" id="achpop-name"></div></div></div>
+<div id="celebration"><div class="cele-card">
+  <div class="cele-tag" id="cele-tag">$1M</div>
+  <div class="cele-rank" id="cele-rank">Millionaire</div>
+  <div class="cele-sub" id="cele-sub"></div>
+</div></div>
+<div id="modal-bg"><div class="modal" id="modal"></div></div>
+
+<script src="js/util.js"></script>
+<script src="js/cg.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/market.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/prestige.js"></script>
+<script src="js/boosts.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
